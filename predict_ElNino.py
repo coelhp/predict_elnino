@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 Previsão de Consumo de Energia Elétrica e Efeito do El Niño
-Conversão do script original em R para Python.
+Conversão do script original em R para Python — VERSÃO CORRIGIDA.
+
+Este arquivo aplica as 4 correções encontradas ao comparar a saída real do
+R com a saída real desta conversão (ver relatorio_comparacao_R_vs_Python.md).
+Cada correção está marcada com um comentário "[CORREÇÃO]" explicando o que
+mudou e por quê, para você conseguir comparar antes/depois.
 
 Dependências (instalar com pip):
     pip install pandas numpy scipy scikit-learn statsmodels pmdarima
     openpyxl matplotlib seaborn
-
-Observação sobre o ARIMA:
-    O R usa forecast::auto.arima(), que escolhe automaticamente (p,d,q).
-    O equivalente mais próximo em Python é pmdarima.auto_arima(). Caso o
-    pacote não esteja disponível, o script cai para um ARIMA(1,1,1) fixo
-    via statsmodels como alternativa.
 """
 
 import warnings
@@ -26,6 +25,7 @@ import seaborn as sns
 from scipy import stats
 from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import StandardScaler
 from statsmodels.tsa.holtwinters import SimpleExpSmoothing
 
 try:
@@ -60,10 +60,23 @@ def mae(real, previsto):
     return np.nanmean(np.abs(real - previsto))
 
 
-def rodar_auto_arima(serie, h):
-    """Ajusta um ARIMA e devolve a previsão com h passos à frente."""
+def rodar_auto_arima(serie, h, seasonal=True, m=12):
+    """
+    Ajusta um ARIMA e devolve a previsão com h passos à frente.
+
+    [CORREÇÃO 3] Agora com seasonal=True, m=12 por padrão para séries mensais,
+    replicando o comportamento padrão do R (ts(freq=12) + auto.arima()).
+    O script original em Python usava seasonal=False, o que fazia o modelo
+    ignorar completamente o padrão sazonal mensal presente nos dados.
+    Para séries anuais (ex.: consumo nacional agregado por ano), chame esta
+    função com seasonal=False, m=1 — não faz sentido buscar sazonalidade de
+    período 12 em dados que já são anuais.
+    """
     if HAS_PMDARIMA:
-        modelo = auto_arima(serie, seasonal=False, suppress_warnings=True)
+        modelo = auto_arima(
+            serie, seasonal=seasonal, m=m if seasonal else 1,
+            suppress_warnings=True, stepwise=True,
+        )
         previsao = modelo.predict(n_periods=h)
         return np.asarray(previsao)
     else:
@@ -83,6 +96,39 @@ def preparar_features(df, colunas_categoricas, categorias_referencia):
     for col in colunas_categoricas:
         df[col] = pd.Categorical(df[col], categories=categorias_referencia[col])
     return pd.get_dummies(df, columns=colunas_categoricas, drop_first=False)
+
+
+class SVRComEscala:
+    """
+    [CORREÇÃO 1] Wrapper que escalona X e y antes de treinar o SVR e desfaz
+    a escala nas previsões — replicando o comportamento padrão do R, onde
+    e1071::svm() usa scale=TRUE automaticamente. Sem isso, o SVR do
+    scikit-learn (que NÃO escalona por padrão) praticamente ignora as
+    variáveis de entrada quando o alvo está na casa dos milhões, e acaba
+    prevendo um valor quase constante (próximo da média) para qualquer
+    entrada — foi exatamente isso que aconteceu na versão anterior do script,
+    com o SVM prevendo 5.273.047 para as 25 linhas futuras, não importa a
+    região ou o ano.
+    """
+
+    def __init__(self, kernel="rbf"):
+        self.kernel = kernel
+        self.scaler_x = StandardScaler()
+        self.scaler_y = StandardScaler()
+        self.modelo = SVR(kernel=kernel)
+
+    def fit(self, X, y):
+        Xs = self.scaler_x.fit_transform(X)
+        ys = self.scaler_y.fit_transform(np.asarray(y).reshape(-1, 1)).ravel()
+        self.modelo.fit(Xs, ys)
+        return self
+
+    def predict(self, X):
+        Xs = self.scaler_x.transform(X)
+        pred_escalada = self.modelo.predict(Xs)
+        return self.scaler_y.inverse_transform(
+            pred_escalada.reshape(-1, 1)
+        ).ravel()
 
 
 def criar_dados_futuros(dados_long, meses_ordenados, n_anos=5):
@@ -157,14 +203,21 @@ dados = dados.rename(
 
 
 # ---------------------------------------------------------------------------
-# 8. Transformar os dados para formato longo (pivot_longer -> melt)
+# 8. Transformar os dados para formato longo (equivalente a pivot_longer)
 # ---------------------------------------------------------------------------
+# [CORREÇÃO 2] pandas.melt() empilha por COLUNA (todos os Janeiros primeiro,
+# depois todos os Fevereiros...), enquanto tidyr::pivot_longer() do R
+# empilha por LINHA (os 12 meses de uma linha original em sequência, depois
+# os 12 meses da próxima linha). Isso muda completamente a ordem dos valores
+# quando essa coluna é usada como série temporal (Seção 13/18). Trocamos
+# melt() por set_index(...).stack(), que reproduz a ordem do R.
 
-dados_long = dados.melt(
-    id_vars=["ANO_DE_REFERENCIA", "REGIAO_GEOGRAFICA"],
-    var_name="Mês",
-    value_name="Consumo_MWh",
+dados_long = (
+    dados.set_index(["ANO_DE_REFERENCIA", "REGIAO_GEOGRAFICA"])
+    .stack()
+    .reset_index()
 )
+dados_long.columns = ["ANO_DE_REFERENCIA", "REGIAO_GEOGRAFICA", "Mês", "Consumo_MWh"]
 
 
 # ---------------------------------------------------------------------------
@@ -274,11 +327,15 @@ CATEGORIAS_REF = {
 }
 
 # --- Modelo ARIMA para séries temporais (série agregada do treino) ---
-serie_treino = dados_treino.sort_values(
-    ["ANO_DE_REFERENCIA", "Mês"]
-)["Consumo_MWh"].values
+# [CORREÇÃO 2+3] dados_treino já está na ordem "estilo R" (pivot_longer), então
+# aqui usamos essa ordem NATURAL (sem reordenar por ANO/Mês) e habilitamos
+# sazonalidade mensal (seasonal=True, m=12), replicando fielmente o
+# comportamento do R (ts(..., frequency=12) + auto.arima()).
+serie_treino = dados_treino["Consumo_MWh"].values
 
-previsao_arima = rodar_auto_arima(serie_treino, h=len(dados_teste))
+previsao_arima = rodar_auto_arima(
+    serie_treino, h=len(dados_teste), seasonal=True, m=12
+)
 
 # --- Modelo SVM (equivalente a Consumo_MWh ~ .) ---
 X_treino = preparar_features(
@@ -294,12 +351,22 @@ X_teste = preparar_features(
     CATEGORIAS_REF,
 )
 
-modelo_svm = SVR(kernel="rbf")
+# [CORREÇÃO 1] SVR agora com escalonamento (ver classe SVRComEscala acima)
+modelo_svm = SVRComEscala(kernel="rbf")
 modelo_svm.fit(X_treino, y_treino)
 previsao_svm = modelo_svm.predict(X_teste)
 
 # --- Modelo Random Forest ---
-modelo_rf = RandomForestRegressor(n_estimators=100, random_state=123)
+# [Observação] max_features="1/3" abaixo aproxima o mtry padrão do R
+# (mtry = p/3 para regressão), já que o padrão do sklearn usa todas as
+# variáveis em cada divisão, o que difere do randomForest() do R por
+# padrão. Fique à vontade para remover se preferir o padrão do sklearn.
+n_features_rf = X_treino.shape[1]
+modelo_rf = RandomForestRegressor(
+    n_estimators=100,
+    max_features=max(1, n_features_rf // 3),
+    random_state=123,
+)
 modelo_rf.fit(X_treino, y_treino)
 previsao_rf = modelo_rf.predict(X_teste)
 
@@ -345,7 +412,10 @@ sns.lineplot(
     data=dados_long, x="ANO_DE_REFERENCIA", y="Consumo_MWh",
     hue="REGIAO_GEOGRAFICA", marker="o", errorbar=None,
 )
-plt.title("Evolução do Consumo de Energia Elétrica (2003-2023)")
+# [Correção cosmética] título agora reflete o período real dos dados
+ano_min = int(dados_long["ANO_DE_REFERENCIA"].min())
+ano_max_plot = int(dados_long["ANO_DE_REFERENCIA"].max())
+plt.title(f"Evolução do Consumo de Energia Elétrica ({ano_min}-{ano_max_plot})")
 plt.xlabel("Ano")
 plt.ylabel("Consumo (MWh)")
 plt.tight_layout()
@@ -417,22 +487,46 @@ plt.show()
 # ---------------------------------------------------------------------------
 # 18. Comparação do Consumo Habitual vs. Previsto pelo Modelo de Séries Temporais
 # ---------------------------------------------------------------------------
+# [CORREÇÃO 4] O script original (R e Python) usava h = número de "anos"
+# futuros (5), mas a série é MENSAL — ou seja, previa apenas os 5 PRÓXIMOS
+# MESES e rotulava isso como se fossem os próximos 5 anos. Agora calculamos
+# quantos meses de verdade existem entre o fim dos dados históricos e o
+# (ano, mês) de cada linha futura, prevemos esse horizonte completo, e
+# indexamos a previsão no ponto correto — a previsão de "2030" passa a ser
+# de fato ~49-60 meses à frente, não só o 5º mês.
 
 dados_futuros, anos_futuros, regioes = criar_dados_futuros(dados_long, MESES_ORDENADOS)
 dados_futuros["Consumo_ARIMA"] = np.nan
+
+ultimo_ano_dados = dados_long["ANO_DE_REFERENCIA"].max()  # último ano completo na base
+
+
+def meses_a_frente(ano_alvo, mes_alvo, ultimo_ano):
+    """Quantos meses depois de dezembro/ultimo_ano cai (ano_alvo, mes_alvo)."""
+    idx_mes = MESES_ORDENADOS.index(mes_alvo) + 1  # 1-based (Jan=1 ... Dez=12)
+    return int((ano_alvo - ultimo_ano - 1) * 12 + idx_mes)
+
 
 for regiao in dados_long["REGIAO_GEOGRAFICA"].unique():
     serie_regiao = dados_long.loc[
         dados_long["REGIAO_GEOGRAFICA"] == regiao
     ].sort_values(["ANO_DE_REFERENCIA", "Mês"])["Consumo_MWh"].values
 
-    previsao_arima_futuro = rodar_auto_arima(serie_regiao, h=len(anos_futuros))
-
     idx = dados_futuros["REGIAO_GEOGRAFICA"] == regiao
-    # distribui a previsão nas linhas dessa região, na ordem em que aparecem
-    dados_futuros.loc[idx, "Consumo_ARIMA"] = np.resize(
-        previsao_arima_futuro, idx.sum()
+    linhas_regiao = dados_futuros.loc[idx]
+
+    offsets = [
+        meses_a_frente(row["ANO_DE_REFERENCIA"], row["Mês"], ultimo_ano_dados)
+        for _, row in linhas_regiao.iterrows()
+    ]
+    h_max = int(max(offsets))
+
+    previsao_arima_futuro = rodar_auto_arima(
+        serie_regiao, h=h_max, seasonal=True, m=12
     )
+
+    valores = [previsao_arima_futuro[offset - 1] for offset in offsets]
+    dados_futuros.loc[idx, "Consumo_ARIMA"] = valores
 
 consumo_normal = consumo_normal_por_regiao_mes(dados_long)
 dados_futuros = dados_futuros.merge(
@@ -514,6 +608,8 @@ plt.show()
 # ---------------------------------------------------------------------------
 # 20. Comparação entre modelos preditivos (2024-2028), consumo nacional agregado
 # ---------------------------------------------------------------------------
+# Aqui os dados já são ANUAIS (soma por ano), então não faz sentido usar
+# sazonalidade mensal (m=12) — usamos seasonal=False para essa série.
 
 anos_futuros_5 = list(range(2024, 2029))
 dados_futuros_nac = pd.DataFrame({"ANO_DE_REFERENCIA": anos_futuros_5})
@@ -528,18 +624,19 @@ consumo_geral = (
 
 anos_impacto = [2025, 2027]  # anos com possível impacto significativo (exemplo)
 
-# ARIMA
+# ARIMA (série anual -> sem sazonalidade)
 previsao_arima_nac = rodar_auto_arima(
-    consumo_geral["Consumo_Total"].values, h=len(anos_futuros_5)
+    consumo_geral["Consumo_Total"].values, h=len(anos_futuros_5),
+    seasonal=False, m=1,
 )
 dados_futuros_nac["Consumo_Arima"] = previsao_arima_nac
 
-# SVM (Consumo_Total ~ ANO_DE_REFERENCIA)
+# SVM (Consumo_Total ~ ANO_DE_REFERENCIA) — agora com escalonamento
 X_treino_nac = consumo_geral[["ANO_DE_REFERENCIA"]].values
 y_treino_nac = consumo_geral["Consumo_Total"].values
 X_futuro_nac = dados_futuros_nac[["ANO_DE_REFERENCIA"]].values
 
-modelo_svm_nac = SVR(kernel="rbf")
+modelo_svm_nac = SVRComEscala(kernel="rbf")
 modelo_svm_nac.fit(X_treino_nac, y_treino_nac)
 dados_futuros_nac["Consumo_SVM"] = modelo_svm_nac.predict(X_futuro_nac)
 
@@ -586,12 +683,13 @@ dados_futuros_nac2["Consumo_Normal"] = modelo_ses.forecast(len(anos_futuros_5))
 
 # ARIMA
 previsao_arima_nac2 = rodar_auto_arima(
-    consumo_geral["Consumo_Total"].values, h=len(anos_futuros_5)
+    consumo_geral["Consumo_Total"].values, h=len(anos_futuros_5),
+    seasonal=False, m=1,
 )
 dados_futuros_nac2["Consumo_Arima"] = previsao_arima_nac2
 
-# SVM
-modelo_svm_nac2 = SVR(kernel="rbf")
+# SVM (com escalonamento)
+modelo_svm_nac2 = SVRComEscala(kernel="rbf")
 modelo_svm_nac2.fit(X_treino_nac, y_treino_nac)
 dados_futuros_nac2["Consumo_SVM"] = modelo_svm_nac2.predict(
     dados_futuros_nac2[["ANO_DE_REFERENCIA"]].values
