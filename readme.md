@@ -86,7 +86,7 @@ Efeito El Niño: o R marca proporcionalmente **mais linhas** como "El Niño" que
 
 ## 6. Resumo
 
-| Modelo | RMSE — quão perto do R | Previsões futuras — quão perto do R |
+| Modelo | RMSE - quão perto do R | Previsões futuras - quão perto do R |
 |---|---|---|
 | ARIMA | Praticamente idêntico (0,01%) | Muito próximo (a maioria < 5% de diferença) |
 | SVM | 18,8% menor | Consistente, 3–20% de diferença |
