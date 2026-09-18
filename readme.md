@@ -1,4 +1,4 @@
-# Comparação de Resultados — R vs. Python (versão corrigida)
+# Comparação de Resultados - R vs. Python (versão corrigida)
 
 Comparação direta entre a saída real de `predict_elnino.R` e a saída real de `predict_elnino_v2.py`, ambos rodados sobre a mesma base de dados (`CONSUMO_MENSAL_DE_ENERGIA_ELÉTRICA_POR_CLASSE.xlsx`).
 
@@ -28,7 +28,7 @@ Comparação direta entre a saída real de `predict_elnino.R` e a saída real de
 
 ---
 
-## 3. Previsão futura — Modelo SVM
+## 3. Previsão futura - Modelo SVM
 
 | Ano | Região | Mês | Consumo_SVM (R) | Consumo_SVM (Python) | Dif. relativa |
 |---|---|---|---:|---:|---:|
@@ -47,7 +47,7 @@ Diferença relativa consistente, na faixa de 3–20%, sem colapso do modelo (dif
 
 ---
 
-## 4. Previsão futura — Modelo ARIMA
+## 4. Previsão futura - Modelo ARIMA
 
 | Ano | Região | Mês | Consumo_ARIMA (R) | Consumo_ARIMA (Python) | Dif. relativa |
 |---|---|---|---:|---:|---:|
@@ -65,7 +65,7 @@ Efeito El Niño: **em ambos R e Python, as 25 linhas foram classificadas como "E
 
 ---
 
-## 5. Previsão futura — Modelo Random Forest
+## 5. Previsão futura - Modelo Random Forest
 
 | Ano | Região | Mês | Consumo_RF (R) | Consumo_RF (Python) | Dif. relativa |
 |---|---|---|---:|---:|---:|
