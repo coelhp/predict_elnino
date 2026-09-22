@@ -113,8 +113,8 @@ Cada script gera, para os cinco anos seguintes ao fim da base histórica, uma pr
 
 *(Espaço reservado para imagem: gráfico "Consumo Habitual vs. Previsão", item 16 — SVM, R e Python lado a lado.)*
 
-`![Comparação SVM: Habitual vs Previsto — R]`
-`![Comparação SVM: Habitual vs Previsto — Python]`
+<img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/f60e9f35-b3ec-46a0-b460-2f72364faac6" />
+<img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/da5d5865-f2c2-4c96-81a2-536a65a9c3b8" />
 
 *(Espaço reservado para imagem: gráfico "Consumo Habitual vs. Previsão", item 18 — ARIMA, R e Python lado a lado.)*
 
