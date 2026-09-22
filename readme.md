@@ -65,11 +65,11 @@ Esta é a etapa com **maiores divergências de comportamento**, mesmo com códig
 | ARIMA | `auto.arima()` sobre uma série com `frequency = 12` | `auto_arima(..., seasonal=False, ...)` (ou fallback `ARIMA(1,1,1)` do statsmodels) | `auto.arima()`, com `frequency=12`, testa e tipicamente ativa componente **sazonal** (SARIMA); a função `rodar_auto_arima()` do Python **desativa explicitamente a sazonalidade** (`seasonal=False`). São, na prática, duas classes de modelo diferentes. |
 | Random Forest | `randomForest(Consumo_MWh ~ ., data=..., ntree=100)`, com fatores tratados internamente | `RandomForestRegressor(n_estimators=100, random_state=123)` sobre variáveis categóricas **one-hot codificadas** (`pd.get_dummies`) | O R particiona diretamente sobre os níveis do fator (`REGIAO_GEOGRAFICA`, `Mês`); o Python transforma cada categoria em uma coluna binária antes do ajuste. A árvore resultante e a forma como o espaço de decisão é particionado diferem estruturalmente. |
 
-Vale notar que `ntree`/`n_estimators = 100` e a semente aleatória (`set.seed(123)` / `random_state=123`) foram mantidos equivalentes — a intenção de paridade existe no código, mas os *defaults* silenciosos de cada biblioteca (escala no SVM, sazonalidade no ARIMA) subvertem essa intenção.
+Vale notar que `ntree`/`n_estimators = 100` e a semente aleatória (`set.seed(123)` / `random_state=123`) foram mantidos equivalentes, a intenção de paridade existe no código, mas os *defaults* silenciosos de cada biblioteca (escala no SVM, sazonalidade no ARIMA) subvertem essa intenção.
 
 ### 3.4 Visualização
 
-Ambos os scripts geram os mesmos seis gráficos conceituais (itens 15 a 21), usando `ggplot2` no R e `matplotlib`/`seaborn` no Python. A lógica de destaque dos pontos de "efeito El Niño" (marcadores triangulares) é replicada em Python via `scatter()` manual sobre o subconjunto filtrado, em vez do `scale_shape_manual()` do `ggplot2` — funcionalmente equivalente, mas com pequenas diferenças estéticas de estilo de linha e legenda.
+Ambos os scripts geram os mesmos seis gráficos conceituais (itens 15 a 21), usando `ggplot2` no R e `matplotlib`/`seaborn` no Python. A lógica de destaque dos pontos de "efeito El Niño" (marcadores triangulares) é replicada em Python via `scatter()` manual sobre o subconjunto filtrado, em vez do `scale_shape_manual()` do `ggplot2`, funcionalmente equivalente, mas com pequenas diferenças estéticas de estilo de linha e legenda.
 
 ---
 
@@ -94,14 +94,10 @@ As estatísticas de teste **coincidem para todas as casas decimais reportadas**,
 | SVM | 2.017.963 | 1.251.186 | 7.407.070 | 4.955.697 |
 | Random Forest | 2.042.628 | 1.375.926 | 1.019.225 | 774.088 |
 
-*(Espaço reservado para imagem: gráfico de barras comparando RMSE/MAE dos três modelos, R vs. Python, caso deseje visualizar a tabela acima.)*
-
-`![Comparativo RMSE/MAE R vs Python](inserir_imagem_aqui.png)`
-
 O resultado mais notável da comparação é a **inversão de ranking entre os modelos**:
 
 - Em **R**, o ARIMA é de longe o pior modelo (RMSE ≈ 6,7 milhões), enquanto SVM e Random Forest têm desempenho próximo e muito superior (RMSE ≈ 2,0 milhões).
-- Em **Python**, o ARIMA é o **melhor** modelo (RMSE ≈ 1,0 milhão), o Random Forest fica muito próximo dele (RMSE ≈ 1,0 milhão), e o SVM passa a ser **o pior** de todos (RMSE ≈ 7,4 milhões) — pior inclusive que o ARIMA em R.
+- Em **Python**, o ARIMA é o **melhor** modelo (RMSE ≈ 1,0 milhão), o Random Forest fica muito próximo dele (RMSE ≈ 1,0 milhão), e o SVM passa a ser **o pior** de todos (RMSE ≈ 7,4 milhões), pior inclusive que o ARIMA em R.
 
 Essa inversão não reflete uma diferença real de capacidade preditiva entre as linguagens, mas sim os desvios de configuração discutidos na Seção 3.3 e detalhados na Seção 5.
 
