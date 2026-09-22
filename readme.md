@@ -167,11 +167,11 @@ O padrão geral que emerge é que **nenhuma das discrepâncias reflete um erro d
 
 ## 6. Comparação Visual dos Gráficos
 
-Esta seção reserva espaço para a inclusão manual das imagens geradas por cada script, lado a lado, permitindo uma inspeção visual das divergências discutidas nas seções anteriores.
+Esta seção reserva espaço para a inclusão manual das imagens geradas por cada script, permitindo uma inspeção visual das divergências discutidas nas seções anteriores.
 
 ### 6.1 Evolução do Consumo por Região (2003–2023) — item 15
 
-<<img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/14c25f49-c039-42d6-809b-80603e5c4d74" />
+<img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/14c25f49-c039-42d6-809b-80603e5c4d74" />
 <img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/67258ccc-6796-421a-a4e9-654a9c40c265" />
 
 ### 6.2 Distribuição Mensal do Consumo (Boxplot) — item 17
