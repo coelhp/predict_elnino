@@ -2,7 +2,7 @@
 
 ## Resumo
 
-Este trabalho tem caráter conceitual e compara duas implementações de um mesmo estudo — uma em **R** (`predict_elnino.R`) e outra em **Python** (`predict_ElNino.py`) — que analisam o consumo mensal de energia elétrica no Brasil por região geográfica, buscando identificar padrões associados ao fenômeno El Niño. Ambos os scripts seguem a mesma sequência lógica: carregamento dos dados, transformação para formato longo, tratamento de valores ausentes, testes estatísticos, ajuste de três modelos preditivos (ARIMA, SVM e Random Forest), avaliação de erro (RMSE/MAE) e geração de previsões futuras comparadas a um cenário de consumo "habitual". Apesar da equivalência conceitual entre os dois scripts, as saídas numéricas divergem de forma significativa em pontos específicos, o que é explorado em detalhe neste documento como estudo de caso sobre os riscos de portar código estatístico entre linguagens sem validação cuidadosa de que os "valores padrão" (*defaults*) das bibliotecas realmente correspondem.
+Este trabalho tem caráter conceitual e compara duas implementações de um mesmo estudo, uma em **R** (`predict_elnino.R`) e outra em **Python** (`predict_ElNino.py`), que analisam o consumo mensal de energia elétrica no Brasil por região geográfica, buscando identificar padrões associados ao fenômeno El Niño. Ambos os scripts seguem a mesma sequência lógica: carregamento dos dados, transformação para formato longo, tratamento de valores ausentes, testes estatísticos, ajuste de três modelos preditivos (ARIMA, SVM e Random Forest), avaliação de erro (RMSE/MAE) e geração de previsões futuras comparadas a um cenário de consumo "habitual". Apesar da equivalência conceitual entre os dois scripts, as saídas numéricas divergem de forma significativa em pontos específicos, o que é explorado em detalhe neste documento como estudo de caso sobre os riscos de portar código estatístico entre linguagens sem validação cuidadosa de que os "valores padrão" (*defaults*) das bibliotecas realmente correspondem.
 
 ---
 
@@ -18,7 +18,7 @@ O script em R (`predict_elnino.R`) é a implementação original. O script em Py
 
 - **Fonte de dados:** `CONSUMO_MENSAL_DE_ENERGIA_ELÉTRICA_POR_CLASSE.xlsx`, aba `TOTAL`.
 - **Estrutura original:** uma linha por ano/região, com uma coluna para cada mês (formato largo).
-- **Período coberto:** conforme o gráfico de evolução (item 15 de ambos os scripts), de 2003 a 2023.
+- **Período coberto:** conforme o gráfico de evolução (item 15 de ambos os scripts), de 2003 a 2030.
 - **Regiões:** Norte, Nordeste, Sudeste, Sul e Centro-Oeste.
 - **Divisão treino/teste:** anos `< 2020` como treino, anos `>= 2020` como teste — idêntica nos dois scripts, resultando em **360 observações de teste** em ambos os casos (confirmado nas duas saídas).
 - **Modelos comparados:** ARIMA (`auto.arima` em R / `auto_arima` do `pmdarima` ou `ARIMA` do `statsmodels` em Python), SVM com kernel radial (`e1071::svm` em R / `sklearn.svm.SVR` em Python) e Random Forest (`randomForest` em R / `RandomForestRegressor` do `scikit-learn` em Python).
@@ -42,7 +42,7 @@ O script em R (`predict_elnino.R`) é a implementação original. O script em Py
 
 Embora produzam o mesmo conjunto de valores, as duas funções **não geram necessariamente a mesma ordem de linhas**: `pivot_longer()` do R tende a preservar a ordem das linhas originais, expandindo os meses em sequência para cada combinação ano/região; já `melt()` do pandas, por padrão, varre coluna a coluna (todos os anos/regiões para "JANEIRO", depois todos para "FEVEREIRO", e assim por diante). Isso não altera testes estatísticos que independem de ordem (como Shapiro-Wilk ou Kruskal-Wallis), mas **é crítico para qualquer modelo que dependa da ordenação temporal**, como o ARIMA construído diretamente a partir do vetor de valores (ver Seção 5.2).
 
-O script Python tenta mitigar isso ordenando explicitamente por `ANO_DE_REFERENCIA` e `Mês` antes de montar a série usada no ARIMA — mas essa ordenação não distingue região, de modo que, para um mesmo par (ano, mês), os valores das cinco regiões continuam intercalados de forma não determinística. Esse é um problema estrutural presente, em graus diferentes, **nas duas linguagens**: tratar uma série multi-regional como uma única série mensal (`frequency = 12`) mistura conceitualmente cinco séries distintas em uma só.
+O script Python tenta mitigar isso ordenando explicitamente por `ANO_DE_REFERENCIA` e `Mês` antes de montar a série usada no ARIMA, mas essa ordenação não distingue região, de modo que, para um mesmo par (ano, mês), os valores das cinco regiões continuam intercalados de forma não determinística. Esse é um problema estrutural presente, em graus diferentes, **nas duas linguagens**: tratar uma série multi-regional como uma única série mensal (`frequency = 12`) mistura conceitualmente cinco séries distintas em uma só.
 
 ### 3.2 Testes estatísticos
 
