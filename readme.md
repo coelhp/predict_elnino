@@ -111,20 +111,20 @@ Cada script gera, para os cinco anos seguintes ao fim da base histórica, uma pr
 | ARIMA (Séries Temporais) | 25 / 0 | 25 / 0 |
 | Random Forest | 19 / 6 | 8 / 17 |
 
-#*SVM*
+#  *SVM*
 
 <img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/f60e9f35-b3ec-46a0-b460-2f72364faac6" />
 <img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/da5d5865-f2c2-4c96-81a2-536a65a9c3b8" />
 
-#*ARIMA*
+#  *ARIMA*
 
 <img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/4038f014-b2bb-4b8f-9fd2-e34c6d49f5b8" />
 <img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/5e37d915-a53f-4d24-9e08-e5da59c0aac7" />
 
-#*Random Forest*
+#  *Random Forest*
 
-`![Comparação Random Forest: Habitual vs Previsto — R]`
-`![Comparação Random Forest: Habitual vs Previsto — Python]`
+<img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/12833203-52ff-4df1-88aa-8d53f9c8b044" />
+<img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/41f064af-7d56-4809-bfaa-1a58ec032482" />
 
 O achado mais expressivo é o comportamento do **SVM em Python**: todas as 25 linhas previstas recebem exatamente o **mesmo valor previsto** (5.273.047 MWh), independentemente do ano ou da região. Isso é um sintoma clássico de um SVR com kernel RBF ajustado **sem escalonamento de variáveis**: quando as variáveis (ano, região codificada, mês codificado) têm escalas muito diferentes e a variável resposta tem magnitude na casa dos milhões, o modelo tende a colapsar para uma previsão próxima da média da variável resposta, perdendo a capacidade de diferenciar as observações. Isso é discutido em detalhe na Seção 5.1.
 
