@@ -126,6 +126,7 @@ Cada script gera, para os cinco anos seguintes ao fim da base histórica, uma pr
 <img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/12833203-52ff-4df1-88aa-8d53f9c8b044" />
 <img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/41f064af-7d56-4809-bfaa-1a58ec032482" />
 
+
 O achado mais expressivo é o comportamento do **SVM em Python**: todas as 25 linhas previstas recebem exatamente o **mesmo valor previsto** (5.273.047 MWh), independentemente do ano ou da região. Isso é um sintoma clássico de um SVR com kernel RBF ajustado **sem escalonamento de variáveis**: quando as variáveis (ano, região codificada, mês codificado) têm escalas muito diferentes e a variável resposta tem magnitude na casa dos milhões, o modelo tende a colapsar para uma previsão próxima da média da variável resposta, perdendo a capacidade de diferenciar as observações. Isso é discutido em detalhe na Seção 5.1.
 
 ---
