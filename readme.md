@@ -118,8 +118,8 @@ Cada script gera, para os cinco anos seguintes ao fim da base histórica, uma pr
 
 *(Espaço reservado para imagem: gráfico "Consumo Habitual vs. Previsão", item 18 — ARIMA, R e Python lado a lado.)*
 
-`![Comparação ARIMA: Habitual vs Previsto — R]`
-`![Comparação ARIMA: Habitual vs Previsto — Python]`
+<img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/4038f014-b2bb-4b8f-9fd2-e34c6d49f5b8" />
+<img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/5e37d915-a53f-4d24-9e08-e5da59c0aac7" />
 
 *(Espaço reservado para imagem: gráfico "Consumo Habitual vs. Previsão", item 19 — Random Forest, R e Python lado a lado.)*
 
