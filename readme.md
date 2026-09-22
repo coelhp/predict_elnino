@@ -111,17 +111,17 @@ Cada script gera, para os cinco anos seguintes ao fim da base histórica, uma pr
 | ARIMA (Séries Temporais) | 25 / 0 | 25 / 0 |
 | Random Forest | 19 / 6 | 8 / 17 |
 
-*(Espaço reservado para imagem: gráfico "Consumo Habitual vs. Previsão", item 16 — SVM, R e Python lado a lado.)*
+#*SVM*
 
 <img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/f60e9f35-b3ec-46a0-b460-2f72364faac6" />
 <img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/da5d5865-f2c2-4c96-81a2-536a65a9c3b8" />
 
-*(Espaço reservado para imagem: gráfico "Consumo Habitual vs. Previsão", item 18 — ARIMA, R e Python lado a lado.)*
+#*ARIMA*
 
 <img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/4038f014-b2bb-4b8f-9fd2-e34c6d49f5b8" />
 <img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/5e37d915-a53f-4d24-9e08-e5da59c0aac7" />
 
-*(Espaço reservado para imagem: gráfico "Consumo Habitual vs. Previsão", item 19 — Random Forest, R e Python lado a lado.)*
+#*Random Forest*
 
 `![Comparação Random Forest: Habitual vs Previsto — R]`
 `![Comparação Random Forest: Habitual vs Previsto — Python]`
