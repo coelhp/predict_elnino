@@ -171,12 +171,12 @@ Esta seção reserva espaço para a inclusão manual das imagens geradas por cad
 
 ### 6.1 Evolução do Consumo por Região (2003–2023) — item 15
 
-`<img width="806" height="352" alt="image" src="https://github.com/user-attachments/assets/332977b8-1e01-43f6-bcfb-4e368843491d" />`
-`<img width="1342" height="637" alt="image" src="https://github.com/user-attachments/assets/2df34c8e-980b-42aa-8444-a1258e4172f8" />`
+<<img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/14c25f49-c039-42d6-809b-80603e5c4d74" />
+<img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/67258ccc-6796-421a-a4e9-654a9c40c265" />
 
 ### 6.2 Distribuição Mensal do Consumo (Boxplot) — item 17
 
-<<img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/377a6c64-d12a-4e2a-bc00-bd0f5ff33018" />
+<img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/377a6c64-d12a-4e2a-bc00-bd0f5ff33018" />
 <img width="1200" height="600" alt="image" src="https://github.com/user-attachments/assets/5c42d856-f217-4c05-9c4e-d278eed99b24" />
 
 ### 6.3 Comparação entre Modelos Preditivos Nacionais (2024–2028) — itens 20 e 21
