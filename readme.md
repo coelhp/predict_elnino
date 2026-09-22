@@ -176,14 +176,13 @@ Esta seção reserva espaço para a inclusão manual das imagens geradas por cad
 
 ### 6.2 Distribuição Mensal do Consumo (Boxplot) — item 17
 
-<img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/af3d078e-8220-407b-9cc9-0b131c9116ca" />
-<img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/3e86a8df-ac3b-45b7-8376-580ccca4df30" />
+<<img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/377a6c64-d12a-4e2a-bc00-bd0f5ff33018" />
+<img width="1200" height="600" alt="image" src="https://github.com/user-attachments/assets/5c42d856-f217-4c05-9c4e-d278eed99b24" />
 
 ### 6.3 Comparação entre Modelos Preditivos Nacionais (2024–2028) — itens 20 e 21
 
-<<img width="1141" height="545" alt="image" src="https://github.com/user-attachments/assets/377a6c64-d12a-4e2a-bc00-bd0f5ff33018" />
-<img width="1200" height="600" alt="image" src="https://github.com/user-attachments/assets/5c42d856-f217-4c05-9c4e-d278eed99b24" />
-" />
+<img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/af3d078e-8220-407b-9cc9-0b131c9116ca" />
+<img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/3e86a8df-ac3b-45b7-8376-580ccca4df30" />
 
 > **Observação:** ao inserir as imagens, recomenda-se observar especialmente a linha do SVM no item 16 (Python) — pela análise numérica da Seção 4.3, essa linha deve aparecer como praticamente horizontal (previsão constante), o que confirmaria visualmente o diagnóstico de ausência de escalonamento discutido na Seção 5.1.
 
