@@ -182,7 +182,8 @@ Esta seção reserva espaço para a inclusão manual das imagens geradas por cad
 ### 6.3 Comparação entre Modelos Preditivos Nacionais (2024–2028) — itens 20 e 21
 
 `![Comparação nacional entre modelos — R](inserir_imagem_aqui.png)`
-`![Comparação nacional entre modelos — Python](inserir_imagem_aqui.png)`
+`![Comparação nacional entre modelos — Python](<img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/e6e69aee-a81f-4ceb-afe2-25e03d9de568" />
+)`
 
 > **Observação:** ao inserir as imagens, recomenda-se observar especialmente a linha do SVM no item 16 (Python) — pela análise numérica da Seção 4.3, essa linha deve aparecer como praticamente horizontal (previsão constante), o que confirmaria visualmente o diagnóstico de ausência de escalonamento discutido na Seção 5.1.
 
