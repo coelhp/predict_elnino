@@ -1,4 +1,4 @@
-# Análise Comparativa entre Implementações em R e Python para Previsão do Consumo de Energia Elétrica e Efeito do El Niño
+# Análise Comparativa entre Implementações em R e Python para Previsão do Consumo de Energia Elétrica e Efeito do El Niño.
 
 ## Resumo
 
