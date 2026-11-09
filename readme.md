@@ -10,7 +10,7 @@ Este trabalho tem caráter conceitual e compara duas implementações de um mesm
 
 O objetivo original do estudo é avaliar se o consumo de energia elétrica nas cinco regiões geográficas do Brasil se desvia do padrão histórico em anos associados a eventos El Niño, e comparar três abordagens de modelagem preditiva quanto à sua capacidade de captar esse desvio: um modelo de séries temporais (ARIMA), um modelo de aprendizado de máquina baseado em margem (SVM com kernel radial) e um modelo de conjunto baseado em árvores (Random Forest).
 
-O script em R (`predict_elnino.R`) é a implementação original. O script em Python (`predict_ElNino.py`) é uma conversão que busca reproduzir a mesma lógica utilizando `pandas`, `scikit-learn`, `pmdarima`/`statsmodels` e `matplotlib`/`seaborn`. As saídas de execução de ambos (`saída_R.txt` e `Saída_Python.txt`) foram comparadas linha a linha para este relatório.
+O script em R (`predict_elnino.R`) é a implementação original. O script em Python (`predict_ElNino.py`) é uma conversão que busca reproduzir a mesma lógica utilizando `pandas`, `scikit-learn`, `pmdarima`/`statsmodels` e `matplotlib`/`seaborn`.
 
 ---
 
